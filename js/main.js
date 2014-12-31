@@ -1,7 +1,7 @@
 var game = new Phaser.Game(780, 455, Phaser.CANVAS, 'canvas', {preload: preload, create: create, update: update});
 
 function preload() {
-  game.load.spritesheet('razz', 'assets/img/razz/walk.png', 67, 61, 4);
+  game.load.spritesheet('razz', 'assets/img/chars/razz.png', 67, 61, 7);
   game.load.tilemap('map', 'assets/maps/map.json', null, Phaser.Tilemap.TILED_JSON);
   game.load.image('tiles', 'assets/img/tiles/map.png')
 }
@@ -10,6 +10,8 @@ var razz;
 var map;
 var layer;
 var cursors;
+
+var jump;
 
 function create() {
 
@@ -26,23 +28,47 @@ function create() {
 
   razz.body.setSize(29, 61, 25, 0);
   razz.body.collideWorldBounds = true;
-  razz.animations.add('walk')
+
+  razz.animations.add('walk', [0,1,2,3], 8);
+  razz.animations.add('jump', [4,5,6], 3);
 
   game.camera.follow(razz);
-  game.physics.arcade.gravity.y = 200;
+  game.physics.arcade.gravity.y = 300;
 
   cursors = game.input.keyboard.createCursorKeys();
+
+  cursors.up.onDown.add(function() {
+
+    if (razz.body.onFloor()){
+      razz.body.velocity.y = -200;
+      jump = true;
+    }
+  });
   
 }
 
 function update() {
   game.physics.arcade.collide(razz, layer);
 
-  if (cursors.right.isDown) {
-    razz.animations.play('walk', 8);
-    razz.body.velocity.x = 50;
-  } else {
-    razz.animations.stop('walk', true);
+  if (razz.body.onFloor()) {
     razz.body.velocity.x = 0
+  }
+
+  if (cursors.right.isDown) {
+    razz.body.velocity.x = 50;
+
+    if (razz.body.onFloor()) {
+      razz.animations.play('walk');
+    }
+
+  } else {
+    if (razz.animations.getAnimation('walk').isPlaying) {
+      razz.animations.stop('walk');
+    }
+  }
+
+  if (jump) {
+    razz.animations.play('jump');
+    jump = false;
   }
 }
