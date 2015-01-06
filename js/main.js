@@ -2,25 +2,26 @@ var game = new Phaser.Game(780, 455, Phaser.CANVAS, 'canvas', {preload: preload,
 
 function preload() {
   game.load.atlasJSONArray('razz', 'assets/img/chars/razz.png', 'assets/img/chars/razz.json');
+  game.load.atlasJSONArray('maptiles', 'assets/img/tiles/maptiles.png', 'assets/img/tiles/maptiles.json')
   game.load.tilemap('map', 'assets/maps/map.json', null, Phaser.Tilemap.TILED_JSON);
-  game.load.image('tiles', 'assets/img/tiles/map.png')
 }
 
 var razz;
 var map;
 var layer;
 var cursors;
+var cube;
 
 var jump;
 
 function create() {
 
   var map = game.add.tilemap('map');
-  map.addTilesetImage('Tiles','tiles');
+  map.addTilesetImage('maptiles','maptiles');
 
-  map.setCollisionBetween(1, 3);
+  map.setCollisionBetween(1, 5);
 
-  layer = map.createLayer('Layer 1');
+  layer = map.createLayer('Capa de Patrones 1');
   layer.resizeWorld();
 
   razz = game.add.sprite(0, 455-(65+61), 'razz');
@@ -34,6 +35,9 @@ function create() {
 
   razz.animations.add('jright', ['jright1.png', 'jright2.png', 'jright3.png'], 3);
   razz.animations.add('jleft', ['jleft1.png', 'jleft2.png', 'jleft3.png'], 3);
+
+  razz.animations.add('pright', ['pright1.png', 'pright2.png', 'pright3.png', 'pright4.png'], 8);
+  razz.animations.add('pleft', ['pleft1.png', 'pleft2.png', 'pleft3.png', 'pleft4.png'], 8);
 
   game.camera.follow(razz);
   game.physics.arcade.gravity.y = 300;
@@ -52,6 +56,7 @@ function create() {
 
 function update() {
   game.physics.arcade.collide(razz, layer);
+  game.physics.arcade.collide(cube, layer);
 
   if (razz.body.onFloor()) {
     razz.body.velocity.x = 0
@@ -59,6 +64,9 @@ function update() {
 
   if (cursors.right.isDown) {
     razz.body.velocity.x = 50;
+
+    //set collision bounds
+    razz.body.setSize(28, 61, 25, 0);
 
     if (razz.body.onFloor()) {
       razz.animations.play('right');
@@ -68,6 +76,9 @@ function update() {
   else if (cursors.left.isDown) {
 
     razz.body.velocity.x = -50;
+
+    //set collision bounds
+    razz.body.setSize(28, 61, 12, 0);
 
     if (razz.body.onFloor()) {
       razz.animations.play('left');
