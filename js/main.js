@@ -1,7 +1,7 @@
 var game = new Phaser.Game(780, 455, Phaser.CANVAS, 'canvas', {preload: preload, create: create, update: update});
 
 function preload() {
-  game.load.spritesheet('razz', 'assets/img/chars/razz.png', 67, 61, 7);
+  game.load.atlasJSONArray('razz', 'assets/img/chars/razz.png', 'assets/img/chars/razz.json');
   game.load.tilemap('map', 'assets/maps/map.json', null, Phaser.Tilemap.TILED_JSON);
   game.load.image('tiles', 'assets/img/tiles/map.png')
 }
@@ -29,8 +29,11 @@ function create() {
   razz.body.setSize(29, 61, 25, 0);
   razz.body.collideWorldBounds = true;
 
-  razz.animations.add('walk', [0,1,2,3], 8);
-  razz.animations.add('jump', [4,5,6], 3);
+  razz.animations.add('right', ['right1.png', 'right2.png', 'right3.png', 'right4.png'], 8);
+  razz.animations.add('left', ['left1.png', 'left2.png', 'left3.png', 'left4.png'], 8);
+
+  razz.animations.add('jright', ['jright1.png', 'jright2.png', 'jright3.png'], 3);
+  razz.animations.add('jleft', ['jleft1.png', 'jleft2.png', 'jleft3.png'], 3);
 
   game.camera.follow(razz);
   game.physics.arcade.gravity.y = 300;
@@ -58,17 +61,34 @@ function update() {
     razz.body.velocity.x = 50;
 
     if (razz.body.onFloor()) {
-      razz.animations.play('walk');
+      razz.animations.play('right');
     }
 
-  } else {
-    if (razz.animations.getAnimation('walk').isPlaying) {
-      razz.animations.stop('walk');
+  } 
+  else if (cursors.left.isDown) {
+
+    razz.body.velocity.x = -50;
+
+    if (razz.body.onFloor()) {
+      razz.animations.play('left');
+    }
+
+  }
+  else {
+    if (razz.animations.getAnimation('right').isPlaying) {
+      razz.animations.stop('right');
     }
   }
 
   if (jump) {
-    razz.animations.play('jump');
+    
+    if (cursors.left.isDown) {
+      razz.animations.play('jleft');
+    }
+    else if (cursors.right.isDown) {
+      razz.animations.play('jright');
+    }
+
     jump = false;
   }
 }
