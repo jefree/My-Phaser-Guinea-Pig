@@ -1,0 +1,4 @@
+- push blocks
+- walk and jump
+- puzzle push blocks
+- enemies
