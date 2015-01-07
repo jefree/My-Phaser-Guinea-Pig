@@ -6,6 +6,8 @@ var Razz = function(game) {
 
   this.LOOK_RIGHT_OFFSET_X = 25;
   this.LOOK_LEFT_OFFSET_X = 12;
+
+  this.SPEED_X = 70;
 };
 
 Razz.prototype.on_up_down = function() {
@@ -34,7 +36,7 @@ Razz.prototype.create = function(level) {
 
   this.game.physics.enable(this.razz);
 
-  this.razz.body.setSize(29, 61, 25, 0);
+  this.razz.body.setSize(this.BODY_WIDTH, this.BODY_HEIGHT, this.LOOK_RIGHT_OFFSET_X, 0);
   this.razz.body.collideWorldBounds = true;
 
   this.razz.animations.add('right', ['right1.png', 'right2.png', 'right3.png', 'right4.png'], 8);
@@ -58,10 +60,8 @@ Razz.prototype.update = function() {
   }
 
   if (this.cursors.right.isDown) {
-    this.razz.body.velocity.x = 50;
-
-    //set collision bounds
-    this.razz.body.setSize(28, 61, 25, 0);
+    this.razz.body.velocity.x = this.SPEED_X;
+    this.razz.body.offset.x = this.LOOK_RIGHT_OFFSET_X;
 
     if (this.razz.body.onFloor()) {
       this.razz.animations.play('right');
@@ -69,11 +69,8 @@ Razz.prototype.update = function() {
 
   } 
   else if (this.cursors.left.isDown) {
-
-    this.razz.body.velocity.x = -50;
-
-    //set collision bounds
-    this.razz.body.setSize(28, 61, 12, 0);
+    this.razz.body.velocity.x = -this.SPEED_X;
+    this.razz.body.offset.x = this.LOOK_LEFT_OFFSET_X;
 
     if (this.razz.body.onFloor()) {
       this.razz.animations.play('left');
