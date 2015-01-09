@@ -1,7 +1,7 @@
 var Razz = function(game) {
   this.game = game;
   
-  this.BODY_WIDTH = 28;
+  this.BODY_WIDTH = 25;
   this.BODY_HEIGHT = 61;
 
   this.LOOK_RIGHT_OFFSET_X = 25;
@@ -10,9 +10,13 @@ var Razz = function(game) {
   this.SPEED_X = 70;
 };
 
+Razz.prototype.onFloor = function() {
+  return this.razz.body.touching.down || this.razz.body.onFloor()
+}
+
 Razz.prototype.on_up_down = function() {
 
-  if (this.razz.body.onFloor()){
+  if (this.onFloor()){
     this.razz.body.velocity.y = -200;
     this.jump = true;
   }
@@ -55,7 +59,7 @@ Razz.prototype.create = function(level) {
 Razz.prototype.update = function() {
   this.game.physics.arcade.collide(this.razz, this.level);
 
-  if (this.razz.body.onFloor()) {
+  if (this.onFloor()) {
     this.razz.body.velocity.x = 0
   }
 
@@ -63,7 +67,7 @@ Razz.prototype.update = function() {
     this.razz.body.velocity.x = this.SPEED_X;
     this.razz.body.offset.x = this.LOOK_RIGHT_OFFSET_X;
 
-    if (this.razz.body.onFloor()) {
+    if (this.onFloor()) {
       this.razz.animations.play('right');
     }
 
@@ -72,7 +76,7 @@ Razz.prototype.update = function() {
     this.razz.body.velocity.x = -this.SPEED_X;
     this.razz.body.offset.x = this.LOOK_LEFT_OFFSET_X;
 
-    if (this.razz.body.onFloor()) {
+    if (this.onFloor()) {
       this.razz.animations.play('left');
     }
 
