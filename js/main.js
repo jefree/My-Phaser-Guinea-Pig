@@ -8,7 +8,7 @@ function preload() {
   razz.preload();
 }
 
-var cubes, layer;
+var layer, signals;
 
 function create() {
 
@@ -22,26 +22,29 @@ function create() {
   layer = map.createLayer('Capa de Patrones 1');
   layer.resizeWorld();
 
-  cubes = game.add.group();
-  cubes.enableBody = true;
+  signals = game.add.group();
 
-  map.createFromObjects('Capa de Objetos 1', 6, 'maptiles', 5, true, false, cubes);
-
-  cubes.setAll('body.collideWorldBounds', true);
-  cubes.setAll('body.drag.x', 100);
-
-  razz.create(layer);
+  razz.create(layer, signals);
 
   game.camera.follow(razz.razz);
   game.physics.arcade.gravity.y = 300;
+
+  game.input.onDown.add(function() {
+
+    var worldX = Math.floor(game.input.worldX / 65) * 65;
+    var worldY = Math.floor(game.input.worldY / 65) * 65;
+
+    var signal = game.add.sprite(worldX, worldY, 'maptiles', 5);
+    game.physics.arcade.enable(signal);
+    signal.body.allowGravity = false;
+
+    signals.add(signal);
+
+  }, this);
  
 }
 
 function update() {
-  
-  game.physics.arcade.collide(razz.razz, cubes);
-  game.physics.arcade.collide(layer, cubes);
-  game.physics.arcade.collide(cubes, cubes);
 
   razz.update();
 

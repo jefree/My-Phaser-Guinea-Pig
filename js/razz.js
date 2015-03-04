@@ -7,41 +7,28 @@ var Razz = function(game) {
   this.LOOK_RIGHT_OFFSET_X = 25;
   this.LOOK_LEFT_OFFSET_X = 12;
 
-  this.SPEED_X = 70;
-};
-
-Razz.prototype.onFloor = function() {
-  return this.razz.body.touching.down || this.razz.body.onFloor()
-}
-
-Razz.prototype.on_up_down = function() {
-
-  if (this.onFloor()){
-    this.razz.body.velocity.y = -200;
-    this.jump = true;
-  }
-}
-
-Razz.prototype.create_cursors = function() {
-  this.cursors = this.game.input.keyboard.createCursorKeys();
-  this.cursors.up.onDown.add(this.on_up_down, this);
+  this.SPEED_X = 120;
 };
 
 Razz.prototype.preload = function() {
   this.game.load.atlasJSONArray('razz', 'assets/img/chars/razz.png', 'assets/img/chars/razz.json');
 };
 
-Razz.prototype.create = function(level) {
+Razz.prototype.create = function(level, signals) {
 
   this.level = level;
+  this.signals = signals;
 
-  this.razz = game.add.sprite(0, 0, 'razz');
-  this.razz.position.y = this.game.height - (this.level.map.tileHeight + this.razz.height);
+  this.razz = game.add.sprite(0, 0, 'razz', 'right1.png');
+  this.razz.y = this.game.height - (this.level.map.tileHeight + this.razz.height);
+  //this.razz.x = 750;
 
   this.game.physics.enable(this.razz);
 
   this.razz.body.setSize(this.BODY_WIDTH, this.BODY_HEIGHT, this.LOOK_RIGHT_OFFSET_X, 0);
   this.razz.body.collideWorldBounds = true;
+
+  this.razz.body.velocity.x = this.SPEED_X;
 
   this.razz.animations.add('right', ['right1.png', 'right2.png', 'right3.png', 'right4.png'], 8);
   this.razz.animations.add('left', ['left1.png', 'left2.png', 'left3.png', 'left4.png'], 8);
@@ -52,50 +39,23 @@ Razz.prototype.create = function(level) {
   this.razz.animations.add('pright', ['pright1.png', 'pright2.png', 'pright3.png', 'pright4.png'], 8);
   this.razz.animations.add('pleft', ['pleft1.png', 'pleft2.png', 'pleft3.png', 'pleft4.png'], 8);
 
-  this.create_cursors();
+  this.razz.play('right', null, true);
 
 };
 
-Razz.prototype.update = function() {
+Razz.prototype.update = function() {  
+
+  this.razz.body.velocity.x = this.SPEED_X;
   this.game.physics.arcade.collide(this.razz, this.level);
 
-  if (this.onFloor()) {
-    this.razz.body.velocity.x = 0
-  }
+  this.game.physics.arcade.overlap(this.razz, this.signals, function(razz, signal) {
 
-  if (this.cursors.right.isDown) {
-    this.razz.body.velocity.x = this.SPEED_X;
-    this.razz.body.offset.x = this.LOOK_RIGHT_OFFSET_X;
+    this.signals.remove(signal, true);
 
-    if (this.onFloor()) {
-      this.razz.animations.play('right');
-    }
-
-  } 
-  else if (this.cursors.left.isDown) {
-    this.razz.body.velocity.x = -this.SPEED_X;
-    this.razz.body.offset.x = this.LOOK_LEFT_OFFSET_X;
-
-    if (this.onFloor()) {
-      this.razz.animations.play('left');
-    }
-
-  }
-  else {
-    if (this.razz.animations.getAnimation('right').isPlaying) {
-      this.razz.animations.stop('right');
-    }
-  }
-
-  if (this.jump) {
-    
-    if (this.cursors.left.isDown) {
-      this.razz.animations.play('jleft');
-    }
-    else if (this.cursors.right.isDown) {
-      this.razz.animations.play('jright');
-    }
-
-    this.jump = false;
-  }
+    this.jump();
+  }, null, this);
 };
+
+Razz.prototype.jump = function() {
+  this.razz.body.velocity.y = -300;  
+}
